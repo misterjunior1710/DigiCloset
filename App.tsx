@@ -1,20 +1,22 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 
 // --- UTILS & DATA ---
 
-const playSound = (type: 'click' | 'message' | 'login') => {
+const playSound = (type: 'click' | 'message' | 'login' | 'load' | 'easteregg') => {
   const sounds = {
     click: 'https://www.soundjay.com/buttons/button-16.mp3',
     message: 'https://www.soundjay.com/communication/beep-07.mp3',
-    login: 'https://www.soundjay.com/communication/beep-09.mp3'
+    login: 'https://www.soundjay.com/communication/beep-09.mp3',
+    load: 'https://www.soundjay.com/communication/beep-08.mp3',
+    easteregg: 'https://www.soundjay.com/buttons/button-37.mp3'
   };
   const audio = new Audio(sounds[type]);
-  audio.volume = 0.2;
+  audio.volume = 0.15;
   audio.play().catch(() => {});
 };
 
-// Fit of the day rotation (7 days)
+// High-quality outfit-focused images
 const FITS_OF_THE_WEEK = [
   { id: '1515886657613-9f3515b0c78f', title: 'Velour Vibes' },
   { id: '1539106732377-6c7df64a4af6', title: 'Denim Days' },
@@ -29,17 +31,42 @@ const GET_YEAR_OFFSET = () => new Date().getFullYear() - 20;
 
 // --- Sub-components ---
 
-const Marquee = ({ text }: { text: string }) => (
-  <div className="bg-black text-lime-400 py-1 font-mono border-y-2 border-white overflow-hidden whitespace-nowrap">
+const FlashPlaceholder = () => (
+  <div className="w-full h-16 bg-gray-300 border-2 border-white flex items-center justify-center relative overflow-hidden mb-2">
+    {/* Actual SWF Embed - pointing to a classic Y2K era Flash clock */}
+    <object 
+      type="application/x-shockwave-flash" 
+      data="https://web.archive.org/web/20090829153926/http://geocities.com/Heartland/Plains/1444/star.gif" 
+      className="hidden" // Just to initialize ruffle if needed
+    ></object>
+    <embed 
+      src="https://www.flash-clocks.com/free-flash-clocks-files/flash-clock-103.swf" 
+      quality="high" 
+      width="100%" 
+      height="100%" 
+      type="application/x-shockwave-flash"
+      pluginspage="http://www.macromedia.com/go/getflashplayer"
+    />
+  </div>
+);
+
+const Marquee = ({ text, onEasterEgg }: { text: string; onEasterEgg: () => void }) => (
+  <div 
+    className="bg-black text-lime-400 py-1 font-mono border-y-2 border-white overflow-hidden whitespace-nowrap cursor-pointer hover:text-white"
+    onClick={onEasterEgg}
+  >
     <marquee scrollamount="4">{text}</marquee>
   </div>
 );
 
-const Header = () => (
+const Header = ({ onEasterEgg }: { onEasterEgg: () => void }) => (
   <table width="100%" cellPadding="0" cellSpacing="0" className="bg-gradient-to-b from-gray-300 to-gray-500 border-b-4 border-white">
     <tr>
       <td align="center" className="p-4">
-        <h1 className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-pink-500 via-white to-pink-800 drop-shadow-lg">
+        <h1 
+          className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-pink-500 via-white to-pink-800 drop-shadow-lg cursor-pointer transform hover:scale-105 transition-transform"
+          onClick={onEasterEgg}
+        >
           DIGI-CLOSET
         </h1>
         <p className="text-white text-[10px] font-bold tracking-[0.3em] mt-1 uppercase">
@@ -51,7 +78,7 @@ const Header = () => (
 );
 
 const Sidebar = ({ setPage, user, onLogout }: { setPage: (p: string) => void, user: any, onLogout: () => void }) => (
-  <table width="150" cellPadding="5" cellSpacing="2" className="bg-gray-200 border-2 border-white h-full align-top text-black">
+  <table width="150" cellPadding="0" cellSpacing="0" className="bg-gray-200 border-2 border-white h-full align-top text-black">
     <tr>
       <td className="bg-blue-800 text-white font-bold text-center text-xs p-1 uppercase">Main Menu</td>
     </tr>
@@ -67,7 +94,7 @@ const Sidebar = ({ setPage, user, onLogout }: { setPage: (p: string) => void, us
         <td className="p-0">
           <button 
             onClick={() => { playSound('click'); setPage(id); }}
-            className="w-full text-left px-2 py-1 text-[11px] hover:bg-pink-400 hover:text-white transition-colors uppercase font-bold border-b border-gray-400 text-black"
+            className="w-full text-left px-2 py-0.5 text-[11px] hover:bg-pink-400 hover:text-white transition-colors uppercase font-bold border-b border-gray-400 text-black leading-tight"
           >
             {label}
           </button>
@@ -75,14 +102,14 @@ const Sidebar = ({ setPage, user, onLogout }: { setPage: (p: string) => void, us
       </tr>
     ))}
     <tr>
-      <td className="bg-pink-600 text-white font-bold text-center text-[10px] p-1 mt-4 uppercase">My Status</td>
+      <td className="bg-pink-600 text-white font-bold text-center text-[10px] p-1 mt-2 uppercase">My Status</td>
     </tr>
     <tr>
       <td className="text-[10px] text-center p-2 bg-white border border-gray-300">
         {user ? (
           <div>
             <span className="font-bold text-blue-700">@{user.username}</span><br/>
-            <button onClick={() => { playSound('click'); onLogout(); }} className="text-red-500 underline mt-1">Sign Out</button>
+            <button onClick={() => { playSound('click'); onLogout(); }} className="text-red-500 underline mt-0.5">Sign Out</button>
           </div>
         ) : (
           <span className="italic text-gray-500">Guest Access</span>
@@ -134,19 +161,19 @@ const HomePage = ({ onLogin, setPage }: { onLogin: (u: string, p: string) => boo
           <p className="text-sm">
             Hey guys! I'm so stoked you found my page. DigiCloset is about being yourself. Upload your <strong>mirror selfies</strong> and let's make 200{GET_YEAR_OFFSET() % 10} the best fashion year ever!
           </p>
-          <p className="text-[10px] mt-4 font-bold text-gray-500 text-center">Created by Jason</p>
+          <p className="text-[10px] mt-4 font-bold text-gray-500 text-center uppercase tracking-tighter">Created by Jason</p>
         </td>
         
         <td width="30%" className="td-content p-4 align-top">
-          <h3 className="text-blue-600 font-bold border-b-2 border-blue-200 mb-2 underline text-sm uppercase">Member Area</h3>
+          <h3 className="text-blue-600 font-bold border-b-2 border-pink-400 mb-2 underline text-sm uppercase">Member Area</h3>
           <table width="100%" className="text-xs">
-            <tr><td>User:</td><td><input value={u} onChange={e => setU(e.target.value)} type="text" className="w-full border p-0.5 text-black" /></td></tr>
-            <tr><td>Pass:</td><td><input value={p} onChange={e => setP(e.target.value)} type="password" className="w-full border p-0.5 mt-1 text-black" /></td></tr>
+            <tr><td>User:</td><td><input value={u} onChange={e => setU(e.target.value)} type="text" className="w-full border-black border p-0.5 text-black bg-white" /></td></tr>
+            <tr><td>Pass:</td><td><input value={p} onChange={e => setP(e.target.value)} type="password" className="w-full border-black border p-0.5 mt-1 text-black bg-white" /></td></tr>
             {err && <tr><td colSpan={2} className="text-red-600 font-bold pt-1">{err}</td></tr>}
             <tr><td colSpan={2} align="right"><button onClick={handleLogin} className="glossy-button px-3 py-1 mt-2 font-bold text-black uppercase text-[10px]">Log In</button></td></tr>
           </table>
           <p className="text-[10px] mt-4 text-center">
-            New here? <button onClick={() => setPage('signup')} className="text-blue-600 underline font-bold uppercase">Sign Up Now!</button>
+            New here? <button onClick={() => { playSound('click'); setPage('signup'); }} className="text-blue-600 underline font-bold uppercase">Sign Up Now!</button>
           </p>
         </td>
       </tr>
@@ -161,9 +188,9 @@ const SignupPage = ({ onSignup }: { onSignup: (u: string, p: string) => void }) 
     <div className="td-content p-8 text-black">
       <h2 className="text-2xl font-black text-pink-600 mb-4 border-b-2 border-pink-200 uppercase italic">Join the Community!</h2>
       <table cellPadding="5">
-        <tr><td>Choose Username:</td><td><input value={u} onChange={e => setU(e.target.value)} className="border p-1 text-black" /></td></tr>
-        <tr><td>Choose Password:</td><td><input value={p} onChange={e => setP(e.target.value)} type="password" className="border p-1 text-black" /></td></tr>
-        <tr><td>Favorite Brand:</td><td><input className="border p-1 text-black" placeholder="Von Dutch, Juicy..." /></td></tr>
+        <tr><td>Choose Username:</td><td><input value={u} onChange={e => setU(e.target.value)} className="border-black border p-1 text-black bg-white" /></td></tr>
+        <tr><td>Choose Password:</td><td><input value={p} onChange={e => setP(e.target.value)} type="password" className="border-black border p-1 text-black bg-white" /></td></tr>
+        <tr><td>Favorite Brand:</td><td><input className="border-black border p-1 text-black bg-white" placeholder="Von Dutch, Juicy..." /></td></tr>
         <tr><td colSpan={2}><button onClick={() => onSignup(u, p)} className="glossy-button px-10 py-2 font-bold uppercase">Create My Account!</button></td></tr>
       </table>
     </div>
@@ -179,7 +206,7 @@ const ClosetPage = ({ communityFits, onAddFit }: { communityFits: any[], onAddFi
         <p className="text-xs font-bold mb-2 uppercase">Submit Your Fit (URL):</p>
         <table width="100%">
           <tr>
-            <td><input id="fitUrl" placeholder="Image URL (Unsplash works best!)" className="w-full border p-1 text-xs text-black" /></td>
+            <td><input id="fitUrl" placeholder="Image URL (Unsplash outfit pics only!)" className="w-full border-black border p-1 text-xs text-black bg-white" /></td>
             <td width="100"><button onClick={() => {
               const url = (document.getElementById('fitUrl') as HTMLInputElement).value;
               if(url) onAddFit(url, 'New_Member_06');
@@ -213,6 +240,14 @@ const ClosetPage = ({ communityFits, onAddFit }: { communityFits: any[], onAddFi
 
 const LexsCorner = ({ messages, onSend }: { messages: any[], onSend: (t: string) => void }) => {
   const [input, setInput] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <div className="flex justify-center p-4">
       <table width="350" cellPadding="0" cellSpacing="0" className="border-2 border-blue-800 bg-white shadow-2xl text-black">
@@ -226,7 +261,7 @@ const LexsCorner = ({ messages, onSend }: { messages: any[], onSend: (t: string)
           </td>
         </tr>
         <tr>
-          <td className="p-2 h-72 overflow-y-auto align-top bg-white border-b border-gray-300">
+          <td className="p-2 h-72 overflow-y-auto align-top bg-white border-b border-gray-300" ref={scrollRef}>
             <div className="text-xs space-y-1">
               <p className="text-[10px] text-gray-400 italic mb-2">AOL IM Session Started: {new Date().toLocaleTimeString()}</p>
               <p><span className="text-red-600 font-bold">Lexi:</span> hiiii! im Lexi, ur personal stylist!! ask me anything about your outfit or trends!</p>
@@ -244,7 +279,7 @@ const LexsCorner = ({ messages, onSend }: { messages: any[], onSend: (t: string)
               value={input} 
               onChange={e => setInput(e.target.value)} 
               onKeyDown={e => e.key === 'Enter' && (onSend(input), setInput(''), playSound('message'))}
-              className="w-full border border-gray-400 p-1 text-xs text-black" 
+              className="w-full border-gray-400 border p-1 text-xs text-black bg-white" 
               placeholder="Type message here..." 
             />
             <div className="flex justify-end mt-2">
@@ -276,7 +311,7 @@ const WishlistPage = ({ items, onAdd, onRemove }: { items: any[], onAdd: (n: str
         <td className="py-2">
           <div className="bg-blue-100 p-2 border border-blue-300 flex items-center gap-2">
             <span className="text-xs font-bold">Filter My List:</span>
-            <input value={q} onChange={e => setQ(e.target.value)} className="border p-0.5 text-xs flex-1 text-black" />
+            <input value={q} onChange={e => setQ(e.target.value)} className="border-black border p-0.5 text-xs flex-1 text-black bg-white" />
           </div>
         </td>
       </tr>
@@ -299,9 +334,9 @@ const WishlistPage = ({ items, onAdd, onRemove }: { items: any[], onAdd: (n: str
         <td className="pt-6">
           <div className="bg-gray-100 border p-3">
             <p className="text-xs font-bold uppercase mb-2">Save New Style To Wishlist:</p>
-            <input value={n} onChange={e => setN(e.target.value)} placeholder="Item Name" className="border p-1 text-xs w-full mb-1 text-black" />
-            <input value={d} onChange={e => setD(e.target.value)} placeholder="Description" className="border p-1 text-xs w-full mb-1 text-black" />
-            <input value={pr} onChange={e => setPr(e.target.value)} placeholder="Price e.g. $40" className="border p-1 text-xs w-1/2 mb-1 text-black" />
+            <input value={n} onChange={e => setN(e.target.value)} placeholder="Item Name" className="border-black border p-1 text-xs w-full mb-1 text-black bg-white" />
+            <input value={d} onChange={e => setD(e.target.value)} placeholder="Description" className="border-black border p-1 text-xs w-full mb-1 text-black bg-white" />
+            <input value={pr} onChange={e => setPr(e.target.value)} placeholder="Price e.g. $40" className="border-black border p-1 text-xs w-1/2 mb-1 text-black bg-white" />
             <button onClick={() => { onAdd(n, d, pr); setN(''); setD(''); setPr(''); playSound('click'); }} className="glossy-button px-4 py-1 text-xs font-bold uppercase block mt-2">Save To List</button>
           </div>
         </td>
@@ -325,7 +360,7 @@ const TopSitesPage = () => {
       {sites.map((s, i) => (
         <tr key={i}>
           <td className="py-2 border-b border-gray-200">
-            <a href={s.url} target="_blank" rel="noreferrer" className="font-bold text-pink-600 underline">~ {s.name} ~</a>
+            <a href={s.url} target="_blank" rel="noreferrer" className="font-bold text-pink-600 underline" onClick={() => playSound('click')}>~ {s.name} ~</a>
             <p className="text-[11px] italic">{s.desc}</p>
           </td>
         </tr>
@@ -342,8 +377,8 @@ const GuestbookPage = ({ entries, onAdd }: { entries: any[], onAdd: (n: string, 
       <h2 className="text-xl font-black text-pink-600 mb-4 border-b border-pink-200 uppercase">Digi-Guestbook</h2>
       <div className="bg-white p-4 border border-gray-300 mb-6">
         <p className="text-xs font-bold mb-2 uppercase">Leave a Note:</p>
-        <input value={n} onChange={e => setN(e.target.value)} placeholder="Your Name" className="w-full border p-1 text-xs mb-1 text-black" />
-        <textarea value={c} onChange={e => setC(e.target.value)} placeholder="Message..." className="w-full border p-1 text-xs h-16 text-black" />
+        <input value={n} onChange={e => setN(e.target.value)} placeholder="Your Name" className="w-full border-black border p-1 text-xs mb-1 text-black bg-white" />
+        <textarea value={c} onChange={e => setC(e.target.value)} placeholder="Message..." className="w-full border-black border p-1 text-xs h-16 text-black bg-white" />
         <button onClick={() => { onAdd(n, c); setN(''); setC(''); playSound('click'); }} className="glossy-button px-6 py-1 text-xs font-bold uppercase mt-1">Submit Note</button>
       </div>
       <div className="space-y-4">
@@ -365,6 +400,7 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState([{ username: 'Lexi', password: '123' }]);
   const [vHits, setVHits] = useState(5821);
+  const [loaded, setLoaded] = useState(false);
   
   const [wishlist, setWishlist] = useState(() => {
     const saved = localStorage.getItem('dc_wishlist');
@@ -396,6 +432,14 @@ export default function App() {
 
   const [messages, setMessages] = useState<any[]>([]);
 
+  // Initial load sound
+  useEffect(() => {
+    if (!loaded) {
+      playSound('load');
+      setLoaded(true);
+    }
+  }, [loaded]);
+
   // Local Storage Persistence
   useEffect(() => localStorage.setItem('dc_wishlist', JSON.stringify(wishlist)), [wishlist]);
   useEffect(() => localStorage.setItem('dc_guestbook', JSON.stringify(guestEntries)), [guestEntries]);
@@ -409,18 +453,22 @@ export default function App() {
     localStorage.setItem('dc_vhits', count.toString());
   }, []);
 
-  // Simulate new fit every 2 hours (scaled for demo: every 2 minutes or just add one on mount)
+  // Simulate new fit update logic
   useEffect(() => {
     const interval = setInterval(() => {
-      const newFit = {
-        img: `https://images.unsplash.com/photo-${FITS_OF_THE_WEEK[Math.floor(Math.random()*7)].id}?auto=format&fit=crop&w=200&h=200`,
-        user: `Guest_${Math.floor(Math.random()*900)+100}`,
-        date: `05/21/0${GET_YEAR_OFFSET() % 10}`
-      };
-      setCommunityFits(prev => [newFit, ...prev.slice(0, 11)]);
-    }, 120000); // 2 minutes for demo feel
+      const fitPool = FITS_OF_THE_WEEK.filter(f => !communityFits.some(cf => cf.img.includes(f.id)));
+      if (fitPool.length > 0) {
+        const selected = fitPool[Math.floor(Math.random() * fitPool.length)];
+        const newFit = {
+          img: `https://images.unsplash.com/photo-${selected.id}?auto=format&fit=crop&w=200&h=200`,
+          user: `Guest_${Math.floor(Math.random()*900)+100}`,
+          date: `05/21/0${GET_YEAR_OFFSET() % 10}`
+        };
+        setCommunityFits(prev => [newFit, ...prev.slice(0, 11)]);
+      }
+    }, 300000); // 5 minutes for "realistic" frequent update in demo
     return () => clearInterval(interval);
-  }, []);
+  }, [communityFits]);
 
   const handleLogin = (u: string, p: string) => {
     const found = users.find(usr => usr.username === u && usr.password === p);
@@ -451,23 +499,37 @@ export default function App() {
       const lower = text.toLowerCase();
       
       const responses: Record<string, string[]> = {
-        'blue': ["blue denim is essential for the boardwalk!", "light blue tracksuits are so in right now."],
-        'pink': ["pink is literally my life.", "u can never have too much pink sparkle."],
-        'belt': ["chunky belts are the move!! wear it over a long tank top.", "studded belts? so punk rock, love it."],
-        'razr': ["im saving up for the pink razr, it's so chic.", "everyone at school has one, i need it!"],
-        'skirt': ["denim mini skirts with uggs? classic.", "layered skirts are so cute for summer."],
-        'hi': ["heyyy girl!!", "omg hiii! u look like u have great taste."],
-        'hello': ["hey there! welcome to my corner!", "hiii! what's the fashion tea today?"],
-        'story': ["omg i once wore a trucker hat to a wedding, my mom was SO mad lol.", "last week i found a juicy tracksuit for 10 bucks at the thrift, literal luck!!"],
-        'outfit': ["u should definitely try layering two polo shirts, it's so preppy.", "oversized sunglasses are a MUST for your fit."],
-        'jason': ["jason is the coolest webmaster ever, he built this whole site!", "jason? oh he's the one who makes sure the closet stays fresh!"]
+        'blue': ["blue denim is essential for the boardwalk!", "light blue tracksuits are so in right now.", "omg blue eyeshadow? so retro, i love it!"],
+        'pink': ["pink is literally my life.", "u can never have too much pink sparkle.", "pink velour is everything girl."],
+        'belt': ["chunky belts are the move!! wear it over a long tank top.", "studded belts? so punk rock, love it.", "layer a glitter belt over ur jeans for that extra pop!"],
+        'razr': ["im saving up for the pink razr, it's so chic.", "everyone at school has one, i need it!", "omg razr phone charms? u MUST have them."],
+        'skirt': ["denim mini skirts with uggs? classic.", "layered skirts are so cute for summer.", "skater skirts are so comfy and cute for hanging at the mall."],
+        'hi': ["heyyy girl!!", "omg hiii! u look like u have great taste.", "hey there! how r u??"],
+        'hello': ["hey there! welcome to my corner!", "hiii! what's the fashion tea today?", "hello! ready for some style tips?"],
+        'story': ["omg i once wore a trucker hat to a wedding, my mom was SO mad lol.", "last week i found a juicy tracksuit for 10 bucks at the thrift, literal luck!!", "i remember when i dyed my hair pink... it was such a vibe."],
+        'outfit': ["u should definitely try layering two polo shirts, it's so preppy.", "oversized sunglasses are a MUST for your fit.", "don't forget the glitter! glitter makes every outfit better."],
+        'jason': ["jason is the coolest webmaster ever, he built this whole site!", "jason? oh he's the one who makes sure the closet stays fresh!", "jason is so talented with html, i wish i knew as much as him."],
+        'shoes': ["ugg boots are so warm and look great with everything.", "flip flops with sequins? perfect for a summer vibe.", "platform sneakers are great for that extra height!"],
+        'bag': ["a tiny handbag is all u need for the essentials.", "louis vuitton? classic but so pricey!", "get a fuzzy bag to match ur tracksuit!"]
       };
 
+      let found = false;
       for (const key in responses) {
         if (lower.includes(key)) {
           const options = responses[key];
           reply = options[Math.floor(Math.random() * options.length)];
+          found = true;
           break;
+        }
+      }
+
+      if (!found) {
+        if (lower.includes('?') || lower.includes('advice')) {
+          reply = "honestly, just wear what makes u feel like a star!! but definitely add some glitter.";
+        } else if (lower.length > 20) {
+          reply = "omg u have so much style info! i totally agree with that vibe.";
+        } else {
+          reply = "that's so true! u have such a good eye for style.";
         }
       }
       
@@ -476,13 +538,27 @@ export default function App() {
     }, 800);
   };
 
+  const handleEasterEgg = () => {
+    playSound('easteregg');
+    const colors = ['#ff99cc', '#99ccff', '#ccff99', '#ffcc99', '#cc99ff'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    document.body.style.backgroundColor = randomColor;
+    setTimeout(() => {
+      document.body.style.backgroundColor = '#002b2b';
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen p-4 flex justify-center text-black">
       <table width="800" cellPadding="0" cellSpacing="0" className="bg-white border-4 border-white shadow-[10px_10px_20px_rgba(0,0,0,0.5)] h-fit">
         <tr>
           <td colSpan={2}>
-            <Header />
-            <Marquee text={`*~* WELCOME TO DIGICLOSET *~* YEAR: 0${GET_YEAR_OFFSET() % 10} *~* NEW WISHLIST UPDATES *~* JOIN OUR TOP SITES RING *~* SIGN THE GUESTBOOK *~* XOXO LEXI *~* NO FAKES ALLOWED HERE *~*`} />
+            <FlashPlaceholder />
+            <Header onEasterEgg={handleEasterEgg} />
+            <Marquee 
+              text={`*~* WELCOME TO DIGICLOSET *~* YEAR: 0${GET_YEAR_OFFSET() % 10} *~* NEW WISHLIST UPDATES *~* JOIN OUR TOP SITES RING *~* SIGN THE GUESTBOOK *~* XOXO LEXI *~* NO FAKES ALLOWED HERE *~* CLICK ME FOR A SURPRISE *~*`} 
+              onEasterEgg={handleEasterEgg}
+            />
           </td>
         </tr>
         <tr>
@@ -501,14 +577,14 @@ export default function App() {
               <div className="td-content p-4 text-black">
                 <h2 className="text-xl font-bold border-b border-gray-400 mb-2 uppercase">Legal Disclaimer</h2>
                 <p className="text-xs">DigiCloset is a fan community. All mirror selfies are property of their respective owners. We are not responsible for your fashion choices. Under Section 107 of the Copyright Act 1976, allowance is made for "fair use".</p>
-                <button onClick={() => setPage('home')} className="mt-4 underline text-xs">Back</button>
+                <button onClick={() => { playSound('click'); setPage('home'); }} className="mt-4 underline text-xs">Back</button>
               </div>
             )}
             {page === 'about' && (
               <div className="td-content p-4 text-black">
                 <h2 className="text-xl font-bold border-b border-gray-400 mb-2 uppercase">About Webmaster</h2>
                 <p className="text-xs">Jason is a 19-year-old developer who loves tables, gradients, and MySpace coding. He built DigiCloset to give Lexi a place to share her style genius with the world. Built with Notepad++ and lots of caffeine.</p>
-                <button onClick={() => setPage('home')} className="mt-4 underline text-xs">Back</button>
+                <button onClick={() => { playSound('click'); setPage('home'); }} className="mt-4 underline text-xs">Back</button>
               </div>
             )}
           </td>
@@ -522,9 +598,9 @@ export default function App() {
               </div>
             </div>
             <div className="mt-2 text-gray-500 flex justify-center gap-4">
-              <button onClick={() => setPage('legal')} className="underline">Legal</button>
-              <button onClick={() => setPage('about')} className="underline">About Webmaster</button>
-              <button onClick={() => setPage('lex')} className="underline">Contact Lexi</button>
+              <button onClick={() => { playSound('click'); setPage('legal'); }} className="underline">Legal</button>
+              <button onClick={() => { playSound('click'); setPage('about'); }} className="underline">About Webmaster</button>
+              <button onClick={() => { playSound('click'); setPage('lex'); }} className="underline">Contact Lexi</button>
             </div>
           </td>
         </tr>

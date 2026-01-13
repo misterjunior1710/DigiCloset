@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>~*~ DigiCloset ~*~ Welcome to my page!</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <style>
         /* Retro 2006 Styles that Tailwind can't easily do alone */
         body {
@@ -78,6 +79,13 @@
         .td-content {
             border: 2px inset #ffffff;
             background: #f0f0f0;
+        }
+
+        /* Ensure Ruffle takes up the right space */
+        ruffle-player {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
     </style>
 <script type="importmap">
