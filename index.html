@@ -5,103 +5,422 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>~*~ DigiCloset ~*~ Welcome to my page!</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <style>
-        /* Retro 2006 Styles that Tailwind can't easily do alone */
+        /* CSS RESET & BASE */
         body {
-            /* Matches the dark teal from the provided image */
-            background-color: #002b2b; 
-            /* High-fidelity dot pattern mimicking the reference image */
+            background-color: #002b2b;
             background-image: radial-gradient(#000 1.2px, transparent 0);
             background-size: 5px 5px;
-            font-family: "Tahoma", "Arial", "Verdana", sans-serif;
-            cursor: url('https://cur.cursors-4u.net/games/gam-4/gam384.cur'), auto;
+            font-family: "Tahoma", "Verdana", "Arial", sans-serif;
             margin: 0;
+            padding: 20px;
+            color: #000;
+            cursor: auto;
+        }
+
+        /* LAYOUT TABLES */
+        #main-container {
+            width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 4px border-white;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+            border-style: solid;
+            border-color: #fff;
+        }
+
+        .header-bg {
+            background: linear-gradient(to bottom, #7d7e7d 0%, #0e0e0e 100%);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header-title {
+            margin: 0;
+            font-size: 64px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -4px;
+            color: #fff;
+            text-shadow: 4px 4px 0px #ff3399;
+            text-transform: uppercase;
+        }
+
+        .marquee-strip {
+            background-color: #000;
+            color: #33ff00;
+            font-family: "Courier New", monospace;
+            padding: 2px 0;
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+        }
+
+        /* NAVIGATION */
+        .sidebar {
+            width: 150px;
+            background-color: #d4d0c8;
+            border-right: 2px solid #fff;
+            vertical-align: top;
             padding: 0;
         }
-        
+
+        .nav-header {
+            background: #000080;
+            color: #fff;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 3px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            display: block;
+            width: 100%;
+            padding: 6px 10px;
+            text-decoration: none;
+            color: #000;
+            font-size: 11px;
+            font-weight: bold;
+            border-bottom: 1px solid #808080;
+            background-color: #d4d0c8;
+            border-top: 1px solid #fff;
+            text-align: left;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .nav-item:hover {
+            background-color: #ff3399;
+            color: #fff;
+        }
+
+        /* CONTENT PAGES */
+        .content-area {
+            background-image: url('https://www.transparenttextures.com/patterns/notebook.png');
+            padding: 20px;
+            min-height: 500px;
+            vertical-align: top;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h2.page-title {
+            font-size: 24px;
+            color: #ff3399;
+            border-bottom: 3px double #ff3399;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        /* UI ELEMENTS */
         .glossy-button {
             background: linear-gradient(to bottom, #ffffff 0%, #e5e5e5 50%, #d1d1d1 51%, #a1a1a1 100%);
             border: 2px outset #ffffff;
-            text-shadow: 1px 1px 0px #fff;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            text-transform: uppercase;
         }
-        
+
         .glossy-button:active {
             border: 2px inset #ffffff;
         }
 
-        .pink-bubble {
-            background: linear-gradient(180deg, #ff99cc 0%, #ff3399 100%);
-            border-radius: 20px;
-            box-shadow: inset 0 5px 10px rgba(255,255,255,0.5);
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px #000;
+        .photo-frame {
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #808080;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
         }
 
-        .chrome-text {
-            background: linear-gradient(to bottom, #7d7e7d 0%, #0e0e0e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
+        .photo-frame img {
+            width: 100%;
+            filter: contrast(1.1) brightness(1.1) saturate(1.2);
+        }
+
+        /* AIM CHAT UI */
+        .aim-window {
+            width: 350px;
+            border: 2px solid #000080;
+            background-color: #fff;
+            margin: 0 auto;
         }
 
         .aim-header {
             background: linear-gradient(to right, #000080 0%, #0821d3 100%);
-            color: white;
+            color: #fff;
+            font-size: 11px;
+            padding: 3px 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
         }
 
-        /* 88x31 button style */
-        .retro-button-sm {
-            width: 88px;
-            height: 31px;
+        #chat-log {
+            height: 250px;
+            overflow-y: scroll;
+            padding: 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #ccc;
+            background: #fff;
+        }
+
+        .chat-input-area {
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+
+        #chat-input {
+            width: 75%;
+            padding: 3px;
             border: 1px solid #000;
-            display: inline-block;
-            font-size: 8px;
-            line-height: 31px;
+        }
+
+        /* FOOTER */
+        .footer {
+            background-color: #000;
+            color: #fff;
+            padding: 15px;
             text-align: center;
-            overflow: hidden;
-            background: #ccc;
+            font-size: 10px;
+            border-top: 2px solid #fff;
         }
 
-        .low-res-photo {
-            filter: contrast(1.2) brightness(1.1) saturate(1.4) blur(0.2px);
-            image-rendering: pixelated;
+        .hit-counter {
+            display: inline-block;
+            background-color: #003300;
+            color: #33ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 4px 8px;
+            border: 2px inset #33ff00;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
         }
 
-        table.main-layout {
-            border-collapse: separate;
-            border-spacing: 4px;
-        }
-
-        .td-content {
-            border: 2px inset #ffffff;
-            background: #f0f0f0;
-        }
-
-        /* Ensure Ruffle takes up the right space */
-        ruffle-player {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
+        /* UTILS */
+        .text-xs { font-size: 10px; }
+        .text-pink { color: #ff3399; }
+        .text-blue { color: #000080; }
+        .border-box { border: 2px inset #fff; padding: 10px; background: #eee; }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai"
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0"
   }
 }
 </script>
 </head>
 <body>
+
+    <table id="main-container" cellpadding="0" cellspacing="0">
+        <!-- HEADER -->
+        <tr>
+            <td colspan="2" class="header-bg">
+                <h1 class="header-title">DIGI-CLOSET</h1>
+                <p style="color: #fff; font-size: 10px; letter-spacing: 5px; margin: 5px 0 0 0;">~* FASHION * COMMUNITY * FREEDOM *~</p>
+            </td>
+        </tr>
+
+        <!-- MARQUEE -->
+        <tr>
+            <td colspan="2" class="marquee-strip">
+                <marquee scrollamount="4">
+                    WELCOME TO THE NEW DIGICLOSET! *~* VERSION 1.2 UPDATED *~* CHAT WITH LEXI FOR STYLE TIPS *~* DON'T FORGET TO SIGN THE GUESTBOOK *~* XOXO LEXI *~*
+                </marquee>
+            </td>
+        </tr>
+
+        <tr>
+            <!-- SIDEBAR -->
+            <td class="sidebar">
+                <div class="nav-header">Main Menu</div>
+                <button class="nav-item" onclick="showPage('home')">Home</button>
+                <button class="nav-item" onclick="showPage('closet')">The Closet</button>
+                <button class="nav-item" onclick="showPage('lex')">Chat with Lex</button>
+                <button class="nav-item" onclick="showPage('wishlist')">Wishlist</button>
+                <button class="nav-item" onclick="showPage('guestbook')">Guestbook</button>
+                <button class="nav-item" onclick="showPage('topsites')">TopSites Ring</button>
+
+                <div class="nav-header" style="background: #ff3399; margin-top: 10px;">Status</div>
+                <div style="padding: 10px; text-align: center; font-size: 10px;">
+                    User: <b>GUEST_06</b><br>
+                    Level: <b>NEWBIE</b><br>
+                    <img src="https://web.archive.org/web/20090829153926/http://geocities.com/Heartland/Plains/1444/star.gif" width="20" style="margin-top: 5px;">
+                </div>
+            </td>
+
+            <!-- CONTENT -->
+            <td class="content-area">
+                
+                <!-- HOME PAGE -->
+                <div id="page-home" class="page active">
+                    <h2 class="page-title">Welcome to my corner of the Net!</h2>
+                    <table width="100%" cellpadding="5">
+                        <tr>
+                            <td width="60%" valign="top">
+                                <p style="font-size: 12px; line-height: 1.5;">
+                                    Hi guys!! Welcome to <b>DigiCloset</b>. I built this site because I was tired of all the boring fashion blogs. This is a place for <i>real</i> people to share <i>real</i> outfits. No professional models here, just us!
+                                </p>
+                                <div class="border-box">
+                                    <h3 style="margin: 0 0 5px 0; font-size: 14px;" class="text-blue">What's Hot Right Now?</h3>
+                                    <ul style="font-size: 11px; margin: 0; padding-left: 15px;">
+                                        <li>Pink Velour Tracksuits (Juicy style!)</li>
+                                        <li>Trucker Hats (Von Dutch is king)</li>
+                                        <li>Studded Belts & Layered Polo Shirts</li>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td width="40%" valign="top">
+                                <div class="photo-frame">
+                                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=200&h=250" alt="outfit">
+                                    <p style="font-size: 9px; text-align: center; margin: 5px 0;">~ Today's Vibe ~</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- CLOSET PAGE -->
+                <div id="page-closet" class="page">
+                    <h2 class="page-title">The Community Closet</h2>
+                    <p style="font-size: 11px;">Browse through the latest mirror selfies from our members!</p>
+                    <table width="100%" cellpadding="5">
+                        <tr>
+                            <td>
+                                <div class="photo-frame">
+                                    <img src="https://images.unsplash.com/photo-1529139572765-3974d8453289?auto=format&fit=crop&w=150&h=180">
+                                    <p class="text-xs">By: MissJuicy_06</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="photo-frame">
+                                    <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=150&h=180">
+                                    <p class="text-xs">By: Sk8r_Gurl</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="photo-frame">
+                                    <img src="https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=150&h=180">
+                                    <p class="text-xs">By: PreppyStar</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="border-box" style="margin-top: 20px;">
+                        <h4 style="margin: 0 0 5px 0;">Add your own fit!</h4>
+                        <input type="text" placeholder="Image URL..." style="width: 70%; font-size: 11px;">
+                        <button class="glossy-button">Upload</button>
+                    </div>
+                </div>
+
+                <!-- LEXI CHAT PAGE -->
+                <div id="page-lex" class="page">
+                    <h2 class="page-title">Chat with Lexi</h2>
+                    <p style="font-size: 11px; margin-bottom: 20px;">Lexi is our resident fashion guru. She's online and ready to rate your style!</p>
+                    
+                    <div class="aim-window">
+                        <div class="aim-header">
+                            <span>Lexi - Instant Message</span>
+                            <span>_ □ X</span>
+                        </div>
+                        <div id="chat-log">
+                            <p><span style="color: red; font-weight: bold;">Lexi:</span> hiii! omg welcome! ask me anything about your outfit or trends! <3</p>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Type a message...">
+                            <button class="glossy-button" id="send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WISHLIST PAGE -->
+                <div id="page-wishlist" class="page">
+                    <h2 class="page-title">My Ultimate Wishlist</h2>
+                    <table width="100%" cellpadding="8" style="font-size: 12px; border-collapse: collapse;">
+                        <tr style="background: #ff3399; color: #fff;">
+                            <th>Item Name</th>
+                            <th>Status</th>
+                        </tr>
+                        <tr style="border-bottom: 1px dashed #ccc;">
+                            <td>Pink Motorola RAZR V3</td>
+                            <td>SAVING UP</td>
+                        </tr>
+                        <tr style="border-bottom: 1px dashed #ccc;">
+                            <td>Studded Belt (Hot Topic)</td>
+                            <td>GOT IT!</td>
+                        </tr>
+                        <tr style="border-bottom: 1px dashed #ccc;">
+                            <td>Heelys (Silver/Pink)</td>
+                            <td>WANT IT</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- GUESTBOOK PAGE -->
+                <div id="page-guestbook" class="page">
+                    <h2 class="page-title">Sign the Guestbook</h2>
+                    <div class="border-box" style="margin-bottom: 20px;">
+                        <input type="text" id="gb-name" placeholder="Name" style="display: block; width: 100%; margin-bottom: 5px;">
+                        <textarea id="gb-msg" placeholder="Message..." style="display: block; width: 100%; margin-bottom: 5px; height: 50px;"></textarea>
+                        <button class="glossy-button" id="gb-btn">Sign It!</button>
+                    </div>
+                    <div id="gb-entries" style="font-size: 11px;">
+                        <div style="background: #fff; padding: 5px; border: 1px solid #ccc; margin-bottom: 10px;">
+                            <b>FashionLover99</b> said: "Omg love the site!! Lexi is so cool."
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOPSITES PAGE -->
+                <div id="page-topsites" class="page">
+                    <h2 class="page-title">TopSites & Links</h2>
+                    <ul style="font-size: 12px; line-height: 2;">
+                        <li><a href="#" class="text-pink">~ MySpace (Add Me!) ~</a></li>
+                        <li><a href="#" class="text-pink">~ Neopets Main Page ~</a></li>
+                        <li><a href="#" class="text-pink">~ LiveJournal: My Diary ~</a></li>
+                        <li><a href="#" class="text-pink">~ Stardoll ~</a></li>
+                    </ul>
+                    <div align="center" style="margin-top: 50px;">
+                        <img src="https://web.archive.org/web/20090829153926/http://geocities.com/Heartland/Plains/1444/star.gif">
+                        <p class="text-xs">Proud member of the 2000s WebRing</p>
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+            <td colspan="2" class="footer">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+                    <div>
+                        &copy; 2006 DigiCloset - Best viewed in IE 6.0 at 1024x768<br>
+                        Design by Jason - No Right Click Allowed!
+                    </div>
+                    <div class="hit-counter">
+                        HITS: <span id="hit-count">0005821</span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
     <div id="root"></div>
-    <!-- Explicitly import the index module to ensure the React app mounts -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>

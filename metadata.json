@@ -1,5 +1,8 @@
 {
-  "name": "DigiCloset v1.0",
-  "description": "A retro-inspired Y2K digital closet and fashion community built with 2006 aesthetics, table layouts, and glossy skeuomorphism.",
-  "requestFramePermissions": []
+  "name": "DigiCloset v1.2 (Static)",
+  "description": "A pure static HTML/CSS/VanillaJS recreation of a 2006 fashion community, powered by Gemini AI for interactive styling advice.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }
